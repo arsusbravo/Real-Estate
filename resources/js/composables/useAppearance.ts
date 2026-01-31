@@ -15,6 +15,12 @@ export function updateTheme(value: Appearance): void {
         return;
     }
 
+    // Public pages use data-theme="light" to force light mode
+    if (document.documentElement.getAttribute('data-theme') === 'light') {
+        document.documentElement.classList.remove('dark');
+        return;
+    }
+
     if (value === 'system') {
         const mediaQueryList = window.matchMedia(
             '(prefers-color-scheme: dark)',
@@ -65,6 +71,11 @@ const prefersDark = (): boolean => {
 };
 
 const handleSystemThemeChange = () => {
+    // Skip on public pages that force light mode
+    if (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light') {
+        return;
+    }
+
     const currentAppearance = getStoredAppearance();
 
     updateTheme(currentAppearance || 'system');
